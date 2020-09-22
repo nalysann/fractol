@@ -17,6 +17,7 @@
 #endif
 
 #include "cl_data.h"
+#include "draw.h"
 #include "error.h"
 #include "fractol.h"
 #include "utils.h"

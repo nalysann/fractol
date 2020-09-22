@@ -14,6 +14,7 @@
 # define FRACTOL_H
 
 # include "cl_data.h"
+# include "draw.h"
 # include "image.h"
 
 # include "ft_complex.h"
@@ -44,21 +45,6 @@ typedef enum	e_palette
 {
 	P_MONOCHROME,
 }				t_palette;
-
-typedef struct	s_draw
-{
-	int			type;
-	int			sizex;
-	double		minx;
-	double		maxx;
-	double		miny;
-	double		maxy;
-	double		deltax;
-	double		deltay;
-	double		px;
-	double		py;
-	int			max_iter;
-}				t_draw;
 
 typedef struct	s_fractol
 {
