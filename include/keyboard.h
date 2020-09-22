@@ -134,6 +134,7 @@
 
 int		key_press(int keycode, void *param);
 int		key_release(int keycode, void *param);
+int		destroy_notify(void *param);
 
 /*
 ** Keycode handlers
@@ -142,6 +143,5 @@ int		key_release(int keycode, void *param);
 void	change_max_iter(int keycode, t_fractol *fractol);
 void	move(int keycode, t_fractol *fractol);
 void	change_palette(int keycode, t_fractol *fractol);
-int		destroy_notify(void *param);
 
 #endif
