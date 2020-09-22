@@ -46,26 +46,6 @@ static void		get_type(char *str, t_fractol *fractol)
 	print_usage();
 }
 
-static void		init_draw(t_fractol *fractol)
-{
-	t_draw	*data;
-	double	real_resized;
-
-	data = &fractol->data;
-	fractol->data.size_x = fractol->size_x;
-	data->min_re = MIN_RE_DEF;
-	data->max_re = MAX_RE_DEF;
-	real_resized = (data->max_re - data->min_re) / fractol->size_x *
-												fractol->size_y / 2.0;
-	data->min_im = -real_resized;
-	data->max_im = real_resized;
-	data->delta_re = (data->max_re - data->min_re) / (fractol->size_x - 1);
-	data->delta_im = (data->max_im - data->min_im) / (fractol->size_y - 1);
-	data->p_re = P_RE_DEF;
-	data->p_im = P_IM_DEF;
-	data->max_iter = MAX_ITER_DEF;
-}
-
 static void		init_fractol(t_fractol *fractol)
 {
 	fractol->mlx_ptr = mlx_init();
@@ -87,7 +67,9 @@ static void		init_fractol(t_fractol *fractol)
 			&fractol->img.endian);
 	if (fractol->img.data_addr == NULL)
 		ft_throw(ADDR_MSG, E_MLX);
-	init_draw(fractol);
+	fractol->data.size_x = fractol->size_x;
+	fractol->data.size_y = fractol->size_y;
+	reset(&fractol->data);
 }
 
 int				main(int argc, char *argv[])

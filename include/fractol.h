@@ -19,7 +19,7 @@
 
 # include "ft_complex.h"
 
-# define FRACTAL_TYPES		3
+# define FRACTAL_TYPES		8
 # define PALETTE_TYPES		4
 
 # define MIN_RE_DEF			(-2.0)
@@ -38,12 +38,20 @@ typedef enum	e_type
 {
 	T_MANDELBROT,
 	T_JULIA,
-	T_BURNUNG_SHIP,
+	T_BURNING_SHIP,
+	T_BONUS_1,
+	T_BONUS_2,
+	T_BONUS_3,
+	T_BONUS_4,
+	T_BONUS_5,
 }				t_type;
 
 typedef enum	e_palette
 {
 	P_MONOCHROME,
+	P_PALETTE_1,
+	P_PALETTE_2,
+	P_PALETTE_3,
 }				t_palette;
 
 typedef struct	s_fractol

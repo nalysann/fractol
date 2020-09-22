@@ -17,6 +17,7 @@ typedef struct	s_draw
 {
 	int		type;
 	int		size_x;
+	int		size_y;
 	double	min_re;
 	double	max_re;
 	double	min_im;
