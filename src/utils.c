@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "cl_data.h"
-#include "draw.h"
 #include "error.h"
 #include "fractol.h"
 
@@ -60,19 +59,22 @@ char	*read_kernel_file(char *filename)
 	return (buf);
 }
 
-void	reset(t_draw *data)
+void	reset(int *int_params, double *double_params)
 {
 	double	real_resized;
 
-	data->min_re = MIN_RE_DEF;
-	data->max_re = MAX_RE_DEF;
-	real_resized = (data->max_re - data->min_re) / data->size_x *
-													data->size_y / 2.0;
-	data->min_im = -real_resized;
-	data->max_im = real_resized;
-	data->delta_re = (data->max_re - data->min_re) / (data->size_x - 1);
-	data->delta_im = (data->max_im - data->min_im) / (data->size_y - 1);
-	data->p_re = P_RE_DEF;
-	data->p_im = P_IM_DEF;
-	data->max_iter = MAX_ITER_DEF;
+	int_params[3] = MAX_ITER_DEF;
+	double_params[0] = MIN_RE_DEF;
+	double_params[1] = MAX_RE_DEF;
+	real_resized = (double_params[1] - double_params[0]) / int_params[1] *
+															int_params[2] / 2.0;
+	double_params[2] = -real_resized;
+	double_params[3] = real_resized;
+	double_params[4] = (double_params[1] - double_params[0]) /
+															(int_params[1] - 1);
+	double_params[5] = (double_params[3] - double_params[2]) /
+															(int_params[2] - 1);
+	double_params[6] = P_RE_DEF;
+	double_params[7] = P_IM_DEF;
+
 }

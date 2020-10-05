@@ -22,6 +22,7 @@ SRC = cl_init.c \
       keyboard_utils.c \
       mouse.c \
       mouse_utils.c \
+      palette.c \
       utils.c
 
 INC_DIR = include \

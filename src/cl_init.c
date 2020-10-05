@@ -17,7 +17,6 @@
 #endif
 
 #include "cl_data.h"
-#include "draw.h"
 #include "error.h"
 #include "fractol.h"
 #include "utils.h"
@@ -74,30 +73,36 @@ static void		init_kernel_args(t_fractol *fractol)
 	t_cl	*cl;
 
 	cl = &fractol->cl;
-	cl->data = clCreateBuffer(cl->context, CL_MEM_USE_HOST_PTR, sizeof(t_draw),
-								&fractol->data, &cl->status);
+	cl->int_params = clCreateBuffer(cl->context, CL_MEM_READ_ONLY,
+						sizeof(int) * INT_PARAMS, NULL, &cl->status);
 	if (cl->status != CL_SUCCESS)
-	{
 		ft_throw(BUFFER_MSG, E_OPENCL);
-	}
-	cl->img = clCreateBuffer(cl->context, CL_MEM_READ_WRITE,
-			sizeof(int) * fractol->size_x * fractol->size_y, NULL, &cl->status);
+	cl->double_params = clCreateBuffer(cl->context, CL_MEM_READ_ONLY,
+				sizeof(double) * double_PARAMS, NULL, &cl->status);
 	if (cl->status != CL_SUCCESS)
-	{
 		ft_throw(BUFFER_MSG, E_OPENCL);
-	}
-	cl->status = clSetKernelArg(cl->kernel, 0, sizeof(cl_mem), &cl->data);
+	cl->img = clCreateBuffer(cl->context, CL_MEM_WRITE_ONLY, sizeof(int) *
+			fractol->int_params[1] * fractol->int_params[2], NULL, &cl->status);
 	if (cl->status != CL_SUCCESS)
-	{
-		ft_throw(ARG_MSG, E_OPENCL);
-	}
-	cl->status = clSetKernelArg(cl->kernel, 1, sizeof(cl_mem), &cl->img);
+		ft_throw(BUFFER_MSG, E_OPENCL);
+	cl->palette = clCreateBuffer(cl->context, CL_MEM_READ_ONLY, sizeof(int) *
+							(fractol->int_params[3] + 1), NULL, &cl->status);
 	if (cl->status != CL_SUCCESS)
-	{
+		ft_throw(BUFFER_MSG, E_OPENCL);
+	cl->status = clSetKernelArg(cl->kernel, 0, sizeof(cl_mem), &cl->int_params);
+	if (cl->status != CL_SUCCESS)
 		ft_throw(ARG_MSG, E_OPENCL);
-	}
+	cl->status = clSetKernelArg(cl->kernel, 1, sizeof(cl_mem), &cl->double_params);
+	if (cl->status != CL_SUCCESS)
+		ft_throw(ARG_MSG, E_OPENCL);
+	cl->status = clSetKernelArg(cl->kernel, 2, sizeof(cl_mem), &cl->img);
+	if (cl->status != CL_SUCCESS)
+		ft_throw(ARG_MSG, E_OPENCL);
+	cl->status = clSetKernelArg(cl->kernel, 3, sizeof(cl_mem), &cl->palette);
+	if (cl->status != CL_SUCCESS)
+		ft_throw(ARG_MSG, E_OPENCL);
 }
-
+#include <stdio.h>
 static void		init_kernel(t_fractol *fractol)
 {
 	t_cl	*cl;
@@ -114,6 +119,13 @@ static void		init_kernel(t_fractol *fractol)
 	free(kernel_str);
 	cl->status = clBuildProgram(cl->program, cl->num_devices, &cl->device,
 								NULL, NULL, NULL);
+	if (cl->status == CL_BUILD_PROGRAM_FAILURE) {
+		size_t log_size;
+		clGetProgramBuildInfo(cl->program, cl->device, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+		char *log = (char *)malloc(log_size);
+		clGetProgramBuildInfo(cl->program, cl->device, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+		printf("%s\n", log);
+	}
 	if (cl->status != CL_SUCCESS)
 	{
 		ft_throw(BUILD_MSG, E_OPENCL);

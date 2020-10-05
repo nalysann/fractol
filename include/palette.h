@@ -1,32 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw.h                                             :+:      :+:    :+:   */
+/*   palette.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nalysann <urbilya@gmail.com>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/09/22 14:58:14 by nalysann          #+#    #+#             */
-/*   Updated: 2020/09/22 14:58:14 by nalysann         ###   ########.fr       */
+/*   Created: 2020/09/24 09:42:33 by nalysann          #+#    #+#             */
+/*   Updated: 2020/09/24 09:42:35 by nalysann         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DRAW_H
-# define DRAW_H
+#ifndef PALETTE_H
+# define PALETTE_H
 
-typedef struct	s_draw
-{
-	int		type;
-	int		size_x;
-	int		size_y;
-	double	min_re;
-	double	max_re;
-	double	min_im;
-	double	max_im;
-	double	delta_re;
-	double	delta_im;
-	double	p_re;
-	double	p_im;
-	int		max_iter;
-}				t_draw;
+void			generate_palette(int **palette, int color_beg, int color_end,
+								 int max_iter);
 
 #endif

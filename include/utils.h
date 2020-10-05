@@ -13,10 +13,8 @@
 #ifndef UTILS_H
 # define UTILS_H
 
-# include "draw.h"
-
 void	print_usage(void);
 char	*read_kernel_file(char *filename);
-void	reset(t_draw *data);
+void	reset(int *int_params, double *double_params);
 
 #endif

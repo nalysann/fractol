@@ -14,6 +14,7 @@
 #include "error.h"
 #include "fractol.h"
 #include "hook.h"
+#include "palette.h"
 #include "utils.h"
 
 #include "ft_error.h"
@@ -36,7 +37,7 @@ static void		get_type(char *str, t_fractol *fractol)
 		repr = ft_itoa(i);
 		if (ft_strequ(str, repr))
 		{
-			fractol->data.type = i;
+			fractol->int_params[0] = i;
 			free(repr);
 			return ;
 		}
@@ -51,13 +52,14 @@ static void		init_fractol(t_fractol *fractol)
 	fractol->mlx_ptr = mlx_init();
 	if (fractol->mlx_ptr == NULL)
 		ft_throw(MLX_MSG, E_MLX);
-	mlx_get_screen_size(fractol->mlx_ptr, &fractol->size_x, &fractol->size_y);
-	fractol->win_ptr = mlx_new_window(fractol->mlx_ptr,
-						fractol->size_x, fractol->size_y, "widePeepoFractol");
+	mlx_get_screen_size(fractol->mlx_ptr, &fractol->int_params[1],
+					&fractol->int_params[2]);
+	fractol->win_ptr = mlx_new_window(fractol->mlx_ptr, fractol->int_params[1],
+								fractol->int_params[2], "widePeepoFractol");
 	if (fractol->win_ptr == NULL)
 		ft_throw(WIN_MSG, E_MLX);
 	fractol->img.ptr = mlx_new_image(fractol->mlx_ptr,
-						fractol->size_x, fractol->size_y);
+								fractol->int_params[1], fractol->int_params[2]);
 	if (fractol->img.ptr == NULL)
 		ft_throw(IMG_MSG, E_MLX);
 	fractol->img.data_addr = (int *)mlx_get_data_addr(
@@ -67,9 +69,6 @@ static void		init_fractol(t_fractol *fractol)
 			&fractol->img.endian);
 	if (fractol->img.data_addr == NULL)
 		ft_throw(ADDR_MSG, E_MLX);
-	fractol->data.size_x = fractol->size_x;
-	fractol->data.size_y = fractol->size_y;
-	reset(&fractol->data);
 }
 
 int				main(int argc, char *argv[])
@@ -82,7 +81,10 @@ int				main(int argc, char *argv[])
 	}
 	get_type(argv[1], &fractol);
 	init_fractol(&fractol);
+	reset(fractol.int_params, fractol.double_params);
 	init_cl(&fractol);
+	generate_palette(&fractol.palette, 0x000000, 0xFFFFFF,
+					fractol.int_params[3]);
 	run_cl(&fractol);
 	hook_all(&fractol);
 	mlx_loop(fractol.mlx_ptr);

@@ -30,7 +30,7 @@ void	hook_all(void *param)
 				button_press, param);
 	mlx_hook(fractol->win_ptr, BUTTON_RELEASE, BUTTON_RELEASE_MASK,
 				button_release, param);
-	if (fractol->data.type == T_JULIA)
+	if (fractol->int_params[0] == T_JULIA)
 	{
 		mlx_hook(fractol->win_ptr, MOTION_NOTIFY, MOTION_NOTIFY_MASK,
 				motion_notify, param);

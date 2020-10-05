@@ -26,28 +26,31 @@
 void	run_cl(t_fractol *fractol)
 {
 	t_cl			*cl;
-	const size_t	global_work_size = fractol->size_x * fractol->size_y;
+	const size_t	global_work_size = fractol->int_params[1] *
+										fractol->int_params[2];
 
 	cl = &fractol->cl;
-	cl->status = clEnqueueWriteBuffer(cl->queue, cl->data, CL_TRUE, 0,
-								sizeof(t_draw), &fractol->data, 0, NULL, NULL);
+	cl->status = clEnqueueWriteBuffer(cl->queue, cl->int_params, CL_TRUE, 0,
+				sizeof(int) * INT_PARAMS, fractol->int_params, 0, NULL, NULL);
 	if (cl->status != CL_SUCCESS)
-	{
 		ft_throw(BUFFER_W_MSG, E_OPENCL);
-	}
+	cl->status = clEnqueueWriteBuffer(cl->queue, cl->double_params, CL_TRUE, 0,
+		sizeof(double) * double_PARAMS, fractol->double_params, 0, NULL, NULL);
+	if (cl->status != CL_SUCCESS)
+		ft_throw(BUFFER_W_MSG, E_OPENCL);
+	cl->status = clEnqueueWriteBuffer(cl->queue, cl->palette, CL_TRUE, 0,
+sizeof(int) * (fractol->int_params[3] + 1), fractol->palette, 0, NULL, NULL);
+	if (cl->status != CL_SUCCESS)
+		ft_throw(BUFFER_W_MSG, E_OPENCL);
 	cl->status = clEnqueueNDRangeKernel(cl->queue, cl->kernel, 1, NULL,
 									&global_work_size, NULL, 0, NULL, NULL);
 	if (cl->status != CL_SUCCESS)
-	{
 		ft_throw(EXECUTE_MSG, E_OPENCL);
-	}
 	cl->status = clEnqueueReadBuffer(cl->queue, cl->img, CL_TRUE, 0,
-								sizeof(int) * fractol->size_x * fractol->size_y,
-								fractol->img.data_addr, 0, NULL, NULL);
+				sizeof(int) * fractol->int_params[1] * fractol->int_params[2],
+				fractol->img.data_addr, 0, NULL, NULL);
 	if (cl->status != CL_SUCCESS)
-	{
 		ft_throw(BUFFER_R_MSG, E_OPENCL);
-	}
 	mlx_put_image_to_window(fractol->mlx_ptr, fractol->win_ptr,
 							fractol->img.ptr, 0, 0);
 }

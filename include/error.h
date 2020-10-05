@@ -38,6 +38,9 @@
 # define KERNEL_MSG		"Error: failed to create cl kernel"
 # define BUFFER_MSG		"Error: failed to create cl buffer"
 # define ARG_MSG		"Error: failed to set cl kernel argument"
+# define BUFFER_W_MSG	"Error: failed to write to cl buffer"
+# define BUFFER_R_MSG	"Error: failed to read from cl buffer"
+# define EXECUTE_MSG	"Error: failed to execute cl kernel"
 
 /*
 ** Error codes
