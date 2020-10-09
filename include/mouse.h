@@ -32,7 +32,6 @@
 */
 
 int		button_press(int button, int x, int y, void *param);
-int		button_release(int button, int x, int y, void *param);
 int		motion_notify(int x, int y, void *param);
 
 /*

@@ -26,8 +26,6 @@ void	hook_all(void *param)
 				key_press, param);
 	mlx_hook(fractol->win_ptr, BUTTON_PRESS, BUTTON_PRESS_MASK,
 				button_press, param);
-	mlx_hook(fractol->win_ptr, BUTTON_RELEASE, BUTTON_RELEASE_MASK,
-				button_release, param);
 	mlx_hook(fractol->win_ptr, MOTION_NOTIFY, MOTION_NOTIFY_MASK,
 				motion_notify, param);
 	mlx_hook(fractol->win_ptr, DESTROY_NOTIFY, STRUCTURE_NOTIFY_MASK,
