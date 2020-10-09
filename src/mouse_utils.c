@@ -14,34 +14,30 @@
 #include "fractol.h"
 #include "mouse.h"
 
-static double	interpolate(double start, double end, double interpolation)
+void	zoom(int button, int x, int y, t_fractol *fractol)
 {
-	return (start + ((end - start) * interpolation));
-}
-
-void			zoom(int button, int x, int y, t_fractol *fractol)
-{
-	double	re;
-	double	im;
-	double	interpolation;
-	double	zoom;
-
+	y = fractol->sizey - y;
 	if (button == BUT_DOWN)
 	{
-		zoom = 0.95;
+		fractol->data.shift_re -=
+				x * (fractol->data.scale * ZOOM_DELTA) -
+				x * fractol->data.scale;
+		fractol->data.shift_im -=
+				y * (fractol->data.scale * ZOOM_DELTA) -
+				y * fractol->data.scale;
+		fractol->data.scale *= ZOOM_DELTA;
+		fractol->data.max_iter -= MAX_ITER_DELTA;
 	}
 	else
 	{
-		zoom = 1.05;
+		fractol->data.shift_re -=
+				x * (fractol->data.scale / ZOOM_DELTA) -
+				x * fractol->data.scale;
+		fractol->data.shift_im -=
+				y * (fractol->data.scale / ZOOM_DELTA) -
+				y * fractol->data.scale;
+		fractol->data.scale /= ZOOM_DELTA;
+		fractol->data.max_iter += MAX_ITER_DELTA;
 	}
-	re = (double)x / fractol->int_params[1] * (fractol->double_params[1] - fractol->double_params[0]) + fractol->double_params[0];
-	im = (double)y / fractol->int_params[2] * (fractol->double_params[3] - fractol->double_params[2]) + fractol->double_params[2];
-	interpolation = 1.0 / zoom;
-	fractol->double_params[0] = interpolate(re, fractol->double_params[0], interpolation);
-	fractol->double_params[2] = interpolate(im, fractol->double_params[2], interpolation);
-	fractol->double_params[1] = interpolate(re, fractol->double_params[1], interpolation);
-	fractol->double_params[3] = interpolate(im, fractol->double_params[3], interpolation);
-	fractol->double_params[4] = (fractol->double_params[1] - fractol->double_params[0]) / (fractol->int_params[1] - 1);
-	fractol->double_params[5] = (fractol->double_params[3] - fractol->double_params[2]) / (fractol->int_params[2] - 1);
 	run_cl(fractol);
 }
