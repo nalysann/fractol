@@ -15,6 +15,7 @@ NAME = fractol
 SRC_DIR = src
 
 SRC = cl_init.c \
+      cl_release.c \
       cl_run.c \
       fractol.c \
       hook.c \
@@ -22,7 +23,6 @@ SRC = cl_init.c \
       keyboard_utils.c \
       mouse.c \
       mouse_utils.c \
-      palette.c \
       utils.c
 
 INC_DIR = include \
@@ -53,13 +53,14 @@ ifeq ($(UNAME_S), Linux)
 	CC = gcc
 endif
 
-CFLAGS += $(addprefix -I , $(INC_DIR)) \
+CFLAGS += -Wall -Wextra -Werror \
+          $(addprefix -I , $(INC_DIR)) \
           -MD \
           -march=native -O2 -pipe
 
 LDFLAGS += -L $(FT_DIR) -L $(MLX_DIR)
 
-LDLIBS += -lft -lmlx -lm -framework OpenCL
+LDLIBS += -lft -lmlx -framework OpenCL -lm
 
 RESET = \033[0;0m
 RED = \033[0;31m

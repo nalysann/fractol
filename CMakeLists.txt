@@ -23,15 +23,16 @@ include_directories(libmlx)
 add_executable(fractol
         include/cl_data.h
         include/cl_funs.h
+        include/draw.h
         include/error.h
         include/fractol.h
         include/hook.h
         include/image.h
         include/keyboard.h
         include/mouse.h
-        include/palette.h
         include/utils.h
         src/cl_init.c
+        src/cl_release.c
         src/cl_run.c
         src/fractol.c
         src/hook.c
@@ -40,5 +41,4 @@ add_executable(fractol
         src/keyboard_utils.c
         src/mouse.c
         src/mouse_utils.c
-        src/palette.c
         src/utils.c)
