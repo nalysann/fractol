@@ -12,146 +12,130 @@
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-static int		get_color(double cx, double cy, int iter)
+typedef struct	s_draw
 {
-	union	colour_u
+	int		type;
+	int		sizex;
+	int		size_line_int;
+	int		max_iter;
+	int		palette;
+	double	scale;
+	double	shift_re;
+	double	shift_im;
+	double	param_re;
+	double	param_im;
+}				t_draw;
+
+static int		get_color(double z_re, double z_im, int iter, int palette)
+{
+	union	u_color
 	{
-		int  number;
-		unsigned char channels[4];
-	};
+		int				value;
+		unsigned char	channels[4];
+	}		color;
 
-	union colour_u	c;
+	double continuous_index = iter + 1 - log2(log2(z_re * z_re + z_im * z_im));
 
-	double continuous_index = iter + 1 - log(pow(cx * cx + cy * cy, 0.5)) / log(2.0);
-//	c.channels[0] = (unsigned char)(sin(0.016 * continuous_index + 4) * 230 + 25);
-//	c.channels[1] = (unsigned char)(sin(0.013 * continuous_index + 2) * 230 + 25);
-//	c.channels[2] = (unsigned char)(sin(0.01 * continuous_index + 1) * 230 + 25);
-	c.channels[0] = (unsigned char)(continuous_index);
-	c.channels[1] = (unsigned char)(2 * continuous_index);
-	c.channels[2] = (unsigned char)(4 * continuous_index);
-	c.channels[3] = 0;
+	if (palette == 1)
+	{
+		color.channels[0] = (unsigned char)(sin(0.05 * continuous_index + 0) * 127 + 128);
+		color.channels[1] = (unsigned char)(sin(0.05 * continuous_index + 2) * 127 + 128);
+		color.channels[2] = (unsigned char)(sin(0.05 * continuous_index + 4) * 127 + 128);
+	}
+	else if (palette == 2)
+	{
+		color.channels[0] = (unsigned char)(sin(0.05 * continuous_index + 0) * 127 + 128);
+		color.channels[1] = (unsigned char)(sin(0.05 * continuous_index + 0) * 127 + 128);
+		color.channels[2] = (unsigned char)(sin(0.05 * continuous_index + 0) * 127 + 128);
+	}
+	else if (palette == 3)
+	{
+		color.channels[0] = (unsigned char)(sin(0.05 * continuous_index + 0) * 25 + 230);
+		color.channels[1] = (unsigned char)(sin(0.05 * continuous_index + 2) * 25 + 230);
+		color.channels[2] = (unsigned char)(sin(0.05 * continuous_index + 4) * 25 + 230);
+	}
+	else
+	{
+		color.channels[0] = (unsigned char)(cos(0.05 * continuous_index + 4) * 127 + 128);
+		color.channels[1] = (unsigned char)(sin(0.04 * continuous_index + 2) * 127 + 128);
+		color.channels[2] = (unsigned char)(cos(0.03 * continuous_index + 0) * 127 + 128);
+	}
 
-	return c.number;
+	color.channels[3] = 0;
+
+	return color.value;
 }
 
-static void		img_pixel_put(__global int *int_params,
-								__global int *img,
-								int x,
-								int y,
-								int color)
+static int		iterate(__global t_draw *data, int x, int y)
 {
-	size_t	offset;
-
-	offset = y * int_params[1] + x;
-	img[offset] = color;
-}
-
-static int		iterate_mandelbrot(__global int *int_params,
-									__global double *double_params,
-									int x,
-									int y)
-{
-	double	cx;
-	double	cy;
-	double	zx;
-	double	zy;
+	double	c_re;
+	double	c_im;
+	double	z_re;
+	double	z_im;
 	double	tmp;
 	int		iter;
 
-	cx = double_params[0] + x * double_params[4];
-	cy = double_params[3] - y * double_params[5];
-	zx = cx;
-	zy = cy;
+	c_re = x * data->scale + data->shift_re;
+	c_im = y * data->scale + data->shift_im;
+	z_re = c_re;
+	z_im = c_im;
 	iter = 0;
-	while (zx * zx + zy * zy <= 4 && iter < int_params[3])
+	while (z_re * z_re + z_im * z_im <= 4 && iter < data->max_iter)
 	{
-		tmp = zx * zx - zy * zy + cx;
-		zy = 2.0 * zx * zy + cy;
-		zx = tmp;
+		tmp = z_re;
+		if (data->type == 1)
+		{
+			z_re = z_re * z_re - z_im * z_im + c_re;
+			z_im = 2 * tmp * z_im + c_im;
+		}
+		else if (data->type == 2)
+		{
+			z_re = z_re * z_re - z_im * z_im + data->param_re;
+			z_im = 2 * tmp * z_im + data->param_im;
+		}
+		else if (data->type == 3)
+		{
+			z_re = z_re * z_re - z_im * z_im + c_re;
+			z_im = fabs(2 * tmp * z_im) + c_im;
+		}
+		else if (data->type == 4)
+		{
+			z_re = z_re * z_re - z_im * z_im + c_re;
+			z_im = -2 * tmp * z_im + c_im;
+		}
+		else if (data->type == 5)
+		{
+			z_re = z_re * z_re * z_re - 3 * z_re * z_im * z_im + c_re;
+			z_im = 3 * tmp * tmp * z_im - z_im * z_im * z_im + c_im;
+		}
+		else if (data->type == 6)
+		{
+			z_re = z_re * z_re * z_re - 3 * z_re * z_im * z_im + data->param_re;
+			z_im = 3 * tmp * tmp * z_im - z_im * z_im * z_im + data->param_im;
+		}
+		else if (data->type == 7)
+		{
+			z_re = z_re * z_re - z_im * z_im + data->param_re;
+			z_im = -2 * tmp * z_im + data->param_im;
+		}
+		else if (data->type == 8)
+		{
+			z_re = fabs(z_re * z_re - z_im * z_im) + c_re;
+			z_im = 2 * fabs(tmp * z_im) + c_im;
+		}
 		++iter;
 	}
-	return (get_color(zx, zy, iter));
+	return (iter == data->max_iter ? 0x000000 : get_color(z_re, z_im, iter, data->palette));
 }
 
-static int		iterate_julia(__global int *int_params,
-							__global double *double_params,
-							int x,
-							int y)
-{
-	double	cx;
-	double	cy;
-	double	zx;
-	double	zy;
-	double	tmp;
-	int		iter;
-
-	cx = double_params[0] + x * double_params[4];
-	cy = double_params[3] - y * double_params[5];
-	zx = cx;
-	zy = cy;
-	iter = 0;
-	while (zx * zx + zy * zy <= 4 && iter < int_params[3])
-	{
-		tmp = zx;
-		zx = zx * zx - zy * zy + double_params[6];
-		zy = 2.0 * tmp * zy + double_params[7];
-		++iter;
-	}
-	return (get_color(zx, zy, iter));
-}
-
-static int		iterate_burning_ship(__global int *int_params,
-									__global double *double_params,
-									int x,
-									int y)
-{
-	double	cx;
-	double	cy;
-	double	zx;
-	double	zy;
-	double	tmp;
-	int		iter;
-
-	cx = double_params[0] + x * double_params[4];
-	cy = double_params[3] - y * double_params[5];
-	zx = cx;
-	zy = cy;
-	iter = 0;
-	while (zx * zx + zy * zy <= 4 && iter < int_params[3])
-	{
-		tmp = zx * zx - zy * zy + cx;
-		zy = -fabs(2.0 * zx * zy) + cy;
-		zx = tmp;
-		++iter;
-	}
-	return (get_color(zx, zy, iter));
-}
-
-static int		iterate(__global int *int_params,
-						__global double *double_params,
-						int x,
-						int y)
-{
-	if (int_params[0] == 1)
-		return (iterate_mandelbrot(int_params, double_params, x, y));
-	else if (int_params[0] == 2)
-		return (iterate_julia(int_params, double_params, x, y));
-	else if (int_params[0] == 3)
-		return (iterate_burning_ship(int_params, double_params, x, y));
-	return (0);
-}
-
-__kernel void	fractol(__global int *int_params,
-						__global double *double_params,
-						__global int *img,
-						__global int *palette)
+__kernel void	fractol(__global t_draw *data, __global int *img)
 {
 	int		id;
 	int		x;
 	int		y;
 
 	id = get_global_id(0);
-	x = id % int_params[1];
-	y = id / int_params[1];
-	img_pixel_put(int_params, img, x, y, iterate(int_params, double_params, x, y));
+	x = id % data->sizex;
+	y = id / data->sizex;
+	img[y * data->size_line_int + x] = iterate(data, x, y);
 }
