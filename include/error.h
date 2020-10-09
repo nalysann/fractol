@@ -41,6 +41,11 @@
 # define BUFFER_W_MSG	"Error: failed to write to cl buffer"
 # define BUFFER_R_MSG	"Error: failed to read from cl buffer"
 # define EXECUTE_MSG	"Error: failed to execute cl kernel"
+# define M_RELEASE_MSG	"Error: failed to release cl mem object"
+# define K_RELEASE_MSG	"Error: failed to release cl kernel"
+# define P_RELEASE_MSG	"Error: failed to release cl program"
+# define Q_RELEASE_MSG	"Error: failed to release cl command queue"
+# define C_RELEASE_MSG	"Error: failed to release cl context"
 
 /*
 ** Error codes

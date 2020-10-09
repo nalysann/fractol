@@ -25,9 +25,6 @@
 # define KERNEL_FILE			"./src/kernel.cl"
 # define KERNEL_FILE_MAX_SIZE	8192
 
-# define INT_PARAMS				4
-# define double_PARAMS			8
-
 typedef struct	s_cl
 {
 	cl_uint				num_platforms;
@@ -39,10 +36,8 @@ typedef struct	s_cl
 	cl_command_queue	queue;
 	cl_program			program;
 	cl_kernel			kernel;
-	cl_mem				int_params;
-	cl_mem				double_params;
+	cl_mem				data;
 	cl_mem				img;
-	cl_mem				palette;
 	cl_int				status;
 }				t_cl;
 

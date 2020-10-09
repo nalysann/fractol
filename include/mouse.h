@@ -19,11 +19,13 @@
 ** Button codes
 */
 
-# define BUT_LEFT		1
-# define BUT_RIGHT		2
-# define BUT_MIDDLE		3
-# define BUT_UP			4
-# define BUT_DOWN		5
+# ifdef __APPLE__
+#  define BUT_LEFT		1
+#  define BUT_RIGHT		2
+#  define BUT_MIDDLE	3
+#  define BUT_UP		4
+#  define BUT_DOWN		5
+# endif
 
 /*
 ** Hook functions

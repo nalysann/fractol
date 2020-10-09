@@ -17,5 +17,6 @@
 
 void	init_cl(t_fractol *fractol);
 void	run_cl(t_fractol *fractol);
+void	release_cl(t_fractol *fractol);
 
 #endif

@@ -13,8 +13,10 @@
 #ifndef UTILS_H
 # define UTILS_H
 
+# include "fractol.h"
+
 void	print_usage(void);
 char	*read_kernel_file(char *filename);
-void	reset(int *int_params, double *double_params);
+void	reset(t_fractol *fractol);
 
 #endif
