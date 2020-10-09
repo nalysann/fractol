@@ -26,7 +26,6 @@ int		key_press(int keycode, void *param)
 		move(keycode, fractol);
 	else if (keycode == KEY_R)
 		reset(fractol);
-
 	else if (keycode == KEY_F1 || keycode == KEY_F2 ||
 			keycode == KEY_F3 || keycode == KEY_F4)
 		change_palette(keycode, fractol);
