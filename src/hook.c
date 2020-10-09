@@ -24,8 +24,6 @@ void	hook_all(void *param)
 	fractol = (t_fractol *)param;
 	mlx_hook(fractol->win_ptr, KEY_PRESS, KEY_PRESS_MASK,
 				key_press, param);
-	mlx_hook(fractol->win_ptr, KEY_RELEASE, KEY_RELEASE_MASK,
-				key_release, param);
 	mlx_hook(fractol->win_ptr, BUTTON_PRESS, BUTTON_PRESS_MASK,
 				button_press, param);
 	mlx_hook(fractol->win_ptr, BUTTON_RELEASE, BUTTON_RELEASE_MASK,

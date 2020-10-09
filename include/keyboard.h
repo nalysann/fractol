@@ -145,7 +145,6 @@
 */
 
 int		key_press(int keycode, void *param);
-int		key_release(int keycode, void *param);
 int		destroy_notify(void *param);
 
 /*
