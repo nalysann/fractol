@@ -11,10 +11,10 @@
 /* ************************************************************************** */
 
 #include "cl_data.h"
+#include "cl_funs.h"
 #include "error.h"
 #include "fractol.h"
 
-#include "ft_error.h"
 #include "ft_stdio.h"
 
 #include <fcntl.h>
@@ -30,12 +30,12 @@ void	print_usage(void)
 	ft_printf("    [1] Mandelbrot\n");
 	ft_printf("    [2] Julia\n");
 	ft_printf("    [3] Burning Ship\n");
-	ft_printf("    [4] Bonus 1\n");
-	ft_printf("    [5] Bonus 2\n");
-	ft_printf("    [6] Bonus 3\n");
-	ft_printf("    [7] Bonus 4\n");
-	ft_printf("    [8] Bonus 5\n");
-	ft_throw(USAGE_MSG, E_USAGE);
+	ft_printf("    [4] Tricorn\n");
+	ft_printf("    [5] Multibrot 3\n");
+	ft_printf("    [6] Multi-Julia 3\n");
+	ft_printf("    [7] Juliacorn\n");
+	ft_printf("    [8] Buffalo\n");
+	exit_with_error(USAGE_MSG, E_USAGE);
 }
 
 char	*read_kernel_file(char *filename)
@@ -47,34 +47,39 @@ char	*read_kernel_file(char *filename)
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
-		ft_throw(OPEN_MSG, E_FILE);
+	{
+		exit_with_error(OPEN_MSG, E_FILE);
+	}
 	buf = (char *)malloc(KERNEL_FILE_MAX_SIZE);
 	if (buf == NULL)
-		ft_throw(ALLOC_MSG, E_ALLOC);
+	{
+		exit_with_error(ALLOC_MSG, E_ALLOC);
+	}
 	ret = read(fd, buf, KERNEL_FILE_MAX_SIZE);
 	buf[ret] = '\0';
 	status = close(fd);
 	if (status < 0)
-		ft_throw(CLOSE_MSG, E_FILE);
+	{
+		exit_with_error(CLOSE_MSG, E_FILE);
+	}
 	return (buf);
 }
 
-void	reset(int *int_params, double *double_params)
+void	reset(t_fractol *fractol)
 {
-	double	real_resized;
-
-	int_params[3] = MAX_ITER_DEF;
-	double_params[0] = MIN_RE_DEF;
-	double_params[1] = MAX_RE_DEF;
-	real_resized = (double_params[1] - double_params[0]) / int_params[1] *
-															int_params[2] / 2.0;
-	double_params[2] = -real_resized;
-	double_params[3] = real_resized;
-	double_params[4] = (double_params[1] - double_params[0]) /
-															(int_params[1] - 1);
-	double_params[5] = (double_params[3] - double_params[2]) /
-															(int_params[2] - 1);
-	double_params[6] = P_RE_DEF;
-	double_params[7] = P_IM_DEF;
-
+	fractol->data.max_iter = MAX_ITER_DEF;
+	fractol->data.scale = SCALE_DEF;
+	fractol->data.shift_re = -(fractol->sizex / 2) * fractol->data.scale;
+	fractol->data.shift_im = -(fractol->sizey / 2) * fractol->data.scale;
+	if (fractol->data.type == T_JULIA ||
+		fractol->data.type == T_MULTIJULIA3 ||
+		fractol->data.type == T_JULIACORN)
+	{
+		fractol->is_fixed = 0;
+	}
+	else
+	{
+		fractol->is_fixed = 1;
+	}
+	run_cl(fractol);
 }
